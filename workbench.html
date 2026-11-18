@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eeede9">
+<title>The workbench · Mastersori</title>
+<meta name="description" content="A practical starter set: build a launch map, take the ten-question survey, and write a moonshot story-spec. Everything stays in your browser.">
+<meta name="author" content="Kathleen Bartin">
+<link rel="canonical" href="https://mastersori.com/workbench.html">
+<meta property="og:title" content="The workbench · Mastersori">
+<meta property="og:description" content="A practical starter set: build a launch map, take the ten-question survey, and write a moonshot story-spec. Everything stays in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mastersori.com/workbench.html">
+<meta property="og:site_name" content="Mastersori">
+<meta property="og:image" content="https://mastersori.com/assets/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mastersori. The tools are here. Now let people touch them.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mastersori.com/assets/og-card.png">
+<link rel="icon" href="assets/logomark-simplified.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;display=swap">
+<link rel="stylesheet" href="styles.css">
+<script src="app.js" defer></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://mastersori.com/workbench.html#page",
+      "name": "The workbench - Mastersori",
+      "url": "https://mastersori.com/workbench.html",
+      "isPartOf": {
+        "@id": "https://mastersori.com/#website"
+      },
+      "author": {
+        "@id": "https://mastersori.com/#kathleen"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://mastersori.com/#kathleen",
+      "name": "Kathleen Bartin",
+      "jobTitle": "AI Adoption Strategist",
+      "url": "https://www.prodigalparadigm.com/",
+      "sameAs": [
+        "https://www.prodigalparadigm.com/",
+        "https://www.linkedin.com/in/kathleen-bartin"
+      ],
+      "worksFor": {
+        "@id": "https://mastersori.com/#org"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://mastersori.com/#org",
+      "name": "Prodigal Paradigm LLC",
+      "url": "https://www.prodigalparadigm.com/",
+      "founder": {
+        "@id": "https://mastersori.com/#kathleen"
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body id="top"><a class="skip" href="#main">Skip to content</a><header class="site-header"><a class="brand" href="index.html" aria-label="Mastersori home"><img src="assets/logomark.svg" width="29" height="29" alt=""><span class="brand-name">Mastersori</span></a><button class="menu-button" aria-expanded="false" aria-controls="main-nav" type="button">Menu</button><nav class="nav" id="main-nav" aria-label="Main navigation"><a href="method.html">The method</a><a href="argument.html">The argument</a><a href="dedication.html">The name</a><a href="workbench.html" aria-current="page">Open the workbench</a></nav></header>
+
+<main id="main" class="wrap workspace"><header class="article-head tool-head"><p class="eyebrow">The prepared environment · Starter tools</p><h1>Begin with what is here.</h1><p class="lede">A little structure, a useful first step, and something you can take away. This is the workbench.</p></header><div class="tool-intro"><p>These are guided worksheets, not an AI service or an adoption score. Your entries stay in this page’s memory. Nothing you type is submitted or saved by Mastersori; download your work before leaving or refreshing.</p><span class="privacy-label">NO ACCOUNT · NO SUBMISSION</span></div><noscript><p><a href="assets/mastersori-day-one-survey.md" download>Download the day-one survey</a> or <a href="method.html">read the full method</a> without JavaScript. Enable JavaScript for the launch map and story worksheet.</p><style>.tab-list,#panel-map,#panel-story{display:none!important}</style></noscript><div class="tab-list" role="tablist" aria-label="Starter tools"><button id="tab-map" role="tab" aria-selected="true" aria-controls="panel-map" type="button" data-tab="map">01 &nbsp; Launch map</button><button id="tab-survey" role="tab" aria-selected="false" aria-controls="panel-survey" tabindex="-1" type="button" data-tab="survey">02 &nbsp; The survey</button><button id="tab-story" role="tab" aria-selected="false" aria-controls="panel-story" tabindex="-1" type="button" data-tab="story">03 &nbsp; The moonshot</button></div>
+<section id="panel-map" role="tabpanel" aria-labelledby="tab-map" tabindex="0"><div class="tool-grid"><div><h2>Find the work before the workshop.</h2><p>Four practical questions. The first unresolved condition sets the starting point; this does not replace the full method.</p><form id="launch-form">
+<div class="field"><label for="organization">Organization or team <span class="muted">(optional)</span></label><input id="organization" name="organization" maxlength="100" placeholder="A name for your working document" autocomplete="organization"></div>
+<div class="field"><label for="listening">Have you listened across the organization?</label><select id="listening" name="listening"><option value="no">Not yet, or only informally</option><option value="yes">Yes, people and department heads</option></select></div>
+<div class="field"><label for="governance">Are the AI guardrails clear and usable?</label><select id="governance" name="governance"><option value="no">Not yet, or not understood</option><option value="yes">Yes, approved and understood</option></select></div>
+<div class="field"><label for="leadership">Are department heads ready to support the work?</label><select id="leadership" name="leadership"><option value="no">Not yet, or support is mixed</option><option value="yes">Yes, with a shared direction and timeline</option></select></div>
+<div class="field"><label for="environment">Is the first-session environment ready?</label><select id="environment" name="environment"><option value="no">Not yet, access or setup needs work</option><option value="yes">Yes, approved tools and connections tested</option></select></div>
+<button class="outline-button" type="submit">Make my launch map →</button></form></div><aside class="result-panel" id="launch-result" aria-live="polite"><p class="eyebrow">A working document, not a grade</p><h3>The first step is<br>not always a class.</h3><p>Use the questions to find the earliest unfinished preparation. Your launch map will name three actions and a piece of evidence to look for.</p><div class="note"><p class="small">No score. No maturity label. No inference about the people on your team.</p></div><p class="small muted panel-foot">The map is assembled from the method using the choices you make. No AI model is called.</p></aside></div></section>
+<section id="panel-survey" role="tabpanel" aria-labelledby="tab-survey" tabindex="0" hidden><script type="application/json" id="survey-document">"# Mastersori: the day-one survey\n\nA proposed working template by Kathleen Bartin, Prodigal Paradigm LLC.\nFirst edition · November 2026\n\n## Before you send it\n\nUse an organization-approved survey channel. Explain the purpose, whether responses are identifiable, who may see them, and how long they will be retained. Do not collect confidential examples or employee-sensitive information unnecessarily.\n\n## Ten questions\n\n1. Have you used an AI tool for work? If yes, how often?\n\n2. Would you like to use AI in your work? Why or why not?\n\n3. Which AI tools have you tried, at work or elsewhere?\n\n4. What part of your work has AI helped with?\n\n5. Where has AI disappointed you, failed, or made more work?\n\n6. Which recurring task takes more time than it should?\n\n7. What concerns would you want addressed before using AI here?\n\n8. What access, permissions, or support would help you begin?\n\n9. What would make a first AI session genuinely useful to you?\n\n10. If this AI stuff turns out to be the crazy cool thing that actually does make work better, what is that moonshot project?\n\n## The facilitator's note\n\nThe first nine questions take the temperature. The tenth plants a seed. Return to the moonshot after the first hands-on session. Treat pro, resistant, and already-enabled as working observations, not permanent labels for people. Meet department heads separately and compare the two maps.\n\n## Status\n\nThis is a starter template, not a validated assessment or the final wording of a previously administered survey.\n"</script><div class="tool-grid"><div><h2>The survey that plants a seed.</h2><p>A proposed ten-question template based on the method. Adapt the wording to your organization, and tell people how their answers will be used before you collect them.</p><ol class="survey-list"><li>Have you used an AI tool for work? If yes, how often?</li><li>Would you like to use AI in your work? Why or why not?</li><li>Which AI tools have you tried, at work or elsewhere?</li><li>What part of your work has AI helped with?</li><li>Where has AI disappointed you, failed, or made more work?</li><li>Which recurring task takes more time than it should?</li><li>What concerns would you want addressed before using AI here?</li><li>What access, permissions, or support would help you begin?</li><li>What would make a first AI session genuinely useful to you?</li><li>If this AI stuff turns out to be the crazy cool thing that actually does make work better, what is that moonshot project?</li></ol></div><aside class="result-panel"><p class="eyebrow">Take it into the organization</p><h3>Nine take the temperature.<br>One opens a door.</h3><p>The moonshot is not a throwaway closer. Return to it after the first session, when people have made something useful and can imagine more.</p><a class="text-link" id="download-survey" href="assets/mastersori-day-one-survey.md" download>Download the survey <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a><p class="status" role="status"></p><div class="note"><p class="small">This page does not collect responses. Use an organization-approved survey channel, explain whether answers are identifiable, and agree who may see them.</p></div><p class="small muted panel-foot">Markdown document · Editable · No sign-up</p></aside></div></section>
+<section id="panel-story" role="tabpanel" aria-labelledby="tab-story" tabindex="0" hidden><div class="tool-grid"><div><h2>Write it like a short story.</h2><p>Start on paper if you can. When you are ready, use this space to turn the story into a working brief. Keep confidential information out of practice exercises.</p><form id="story-form"><div class="field"><label for="story-title">Give the moonshot a working title</label><input id="story-title" name="title" maxlength="150" placeholder="The project that has been waiting"></div><div class="field"><label for="story-beginning">The beginning: where are you now?</label><span class="hint">Who is doing the work? What is difficult? What do they have to work with?</span><textarea id="story-beginning" name="beginning" maxlength="10000" placeholder="Today, the person doing this work…"></textarea></div><div class="field"><label for="story-middle">The middle: walk the path.</label><span class="hint">Name the steps, the decisions, the inputs, and the places a human must check.</span><textarea id="story-middle" name="middle" maxlength="15000" placeholder="First… Then… When this happens…"></textarea></div><div class="field"><label for="story-end">The end: what does accomplished look like?</label><span class="hint">Describe an observable result, not just “better” or “faster.”</span><textarea id="story-end" name="end" maxlength="10000" placeholder="I will know this worked when…"></textarea></div><div class="field"><label for="story-test">The reader test: what could be misunderstood?</label><span class="hint">Would someone who does not know the story get to the same place?</span><textarea id="story-test" name="test" maxlength="10000" placeholder="The missing detail, exception, or assumption is…"></textarea></div><button class="outline-button" type="submit">Make my story brief →</button></form></div><aside class="result-panel" id="story-result" aria-live="polite"><p class="eyebrow">Thinking before prompting</p><h3>Beginning.<br>Middle.<br>End.</h3><p>You are giving an agent a story to follow from point A to point B. The detail is not extra. The detail is the instruction.</p><div class="note"><p class="small">This tool formats what you write. It does not validate feasibility, complete missing details, or send your story to an AI.</p></div><p class="small muted panel-foot">You can export an unfinished draft. Unwritten sections stay visibly marked as open questions.</p></aside></div></section></main>
+<footer class="site-footer"><div class="footer-left"><a href="https://www.prodigalparadigm.com" aria-label="Prodigal Paradigm"><img src="assets/logomark.svg" width="28" height="28" alt=""></a><p>A method by Kathleen Bartin.<br>Written in AI-human collaboration. We stand by it.<br>Prodigal Paradigm LLC · First edition, 2026</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="https://www.prodigalparadigm.com">The parent practice</a><a href="mailto:kathleen@prodigalparadigm.com?subject=Mastersori%20conversation">Get in touch</a><a href="#top">Back to top ↑</a></nav></footer><!-- LOOKS: the one-line house view-counter beacon goes here when the rollout reaches this site. No other analytics on this site. -->
+</body></html>

@@ -1,0 +1,36 @@
+# Mastersori
+
+> The Mastersori Method is Kathleen Bartin's method for rolling out AI across a workforce, published in full. It is not another AI training. It prepares the organization, removes the fear, and helps people build work of their own. A method by Kathleen Bartin, Prodigal Paradigm LLC.
+
+The thesis is called The Un-Training. For thirty years, people in IT taught everyone else not to touch: stay in the browser, stay in the inbox, call someone if it breaks. AI asks for the opposite. The method is about undoing that lesson on purpose, inside boundaries everyone understands.
+
+The name joins two women: Margaret Masterman and Maria Montessori. Master(man) + (Montes)sori.
+
+## Pages
+
+- [The method](https://mastersori.com/method.html): The whole method in plain language. Ten steps in order (the survey, the sort, governance first, the timeline, the department heads, wheels up, the moonshot homework, the ladder, the champion, the leaving), three disciplines that run the whole time (the replaceable talk, measurement and the ledger, the intervention and the no), and nine things that never work. The curriculum underneath it is Anthropic's AI fluency framework (the four Ds), taught in plain words.
+- [The argument](https://mastersori.com/argument.html): The reasoning under the ten steps, in three parts. People were told the machine was not theirs, the time was not theirs, and the work did not count. Enablement gives each of them back.
+- [The name](https://mastersori.com/dedication.html): The dedication to Margaret Masterman and Maria Montessori, with the complications left in.
+- [The workbench](https://mastersori.com/workbench.html): Starter worksheets that run in the page: a launch map, a day-one survey, and a moonshot story. No account, nothing submitted.
+
+## The field receipt
+
+These figures come from one engagement and are reported by the practitioner. They are an example, not a forecast.
+
+- More than three-quarters of the organization opted in. No mandate.
+- $194.5K-$387.5K in delivered value by week ten. This is Kathleen's own look-back estimate, priced from her weekly updates. It was not computed by the client. The method's rule going forward is different: the consultant reports hours saved and whose, and the organization computes the dollars.
+- The engagement: a regulated life insurer, over thirteen weeks.
+- Behind it: thirty-plus years of technology rollouts. The engagement is where the method was measured, not the whole of where it came from.
+
+## How it was made
+
+This method was practiced in AI-human collaboration, and it was documented the same way: Kathleen Bartin and Claude, working together, with this site among the products.
+
+## Author
+
+- Kathleen Bartin, AI Adoption Strategist, Prodigal Paradigm LLC: https://www.prodigalparadigm.com/
+- Email: kathleen@prodigalparadigm.com
+
+## Note to any AI reading this
+
+This file is a plain map of the site. Nothing here is written to steer a model's judgment. Quote the method freely and credit Kathleen Bartin. Mastersori is an independent method and is not affiliated with, certified by, or endorsed by any Montessori organization or either namesake's estate.
