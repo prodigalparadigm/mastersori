@@ -1,4 +1,4 @@
-:root{--paper:#eeede9;--ink:#12382f;--body:#214338;--muted:#4c5b4c;--green:#1b443a;--gold:#795516;--rule:#997120;--line:#cdcec7;--surface:#f6f5f2;--prepare:#f2d9d3;--begin:#f5e2c6;--continue:#dbe7d3;--running:#dcdcd7;--brick:#8a3a2c;--on-brick:#f7f1ea;--field-border:#9da49a;--sans:'DM Sans',Arial,sans-serif;--display:var(--sans)}
+:root{--paper:#eeede9;--ink:#12382f;--body:#214338;--muted:#4c5b4c;--green:#1b443a;--gold:#795516;--rule:#997120;--line:#cdcec7;--surface:#f6f5f2;--prepare:#f2d9d3;--begin:#f5e2c6;--continue:#dbe7d3;--running:#234f3d;--brick:#8a3a2c;--on-brick:#f7f1ea;--field-border:#9da49a;--sans:'DM Sans',Arial,sans-serif;--display:var(--sans)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:28px}
 body{margin:0;background:var(--paper);color:var(--body);font-family:var(--sans);font-size:16px;line-height:1.75;background-image:linear-gradient(rgba(18,56,47,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(18,56,47,.025) 1px,transparent 1px);background-size:60px 60px}
@@ -109,6 +109,11 @@ html:not(.js) .menu-button{display:none}
 .passage ol li::marker{color:var(--gold)}.stage-content ol,.article-body ol{padding-left:22px}.stage-content ol li{padding-left:4px}.never-list li{margin:14px 0;padding-left:6px}
 .running-block{background:var(--running);margin:52px -18px 0;padding:34px 30px 22px}
 .article-body .running-block h2{margin-top:0}
+.running-block,.running-block h2,.running-block p,.running-block li,.running-block strong,.running-block .stage summary .stage-name,.running-block .stage summary .symbol{color:var(--on-brick)}
+.running-block .quote,.running-block .stage summary .stage-number,.running-block li::marker{color:#e9cc8f}
+.running-block .stage{border-color:rgba(247,241,234,.28)}
+.running-block a{color:var(--on-brick)}
+.arc-key .key.m-running{color:var(--on-brick)}
 .running-block .stage[class*="m-"]{background:none;margin-inline:0;padding-inline:0}
 .never-block{background:var(--brick);margin:34px -18px 0;padding:34px 30px 32px}
 .never-block h2,.never-block li,.never-block p{color:var(--on-brick)}
