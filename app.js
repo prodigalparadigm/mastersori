@@ -53,7 +53,7 @@ function download(name,content,button){
   const a=document.createElement('a');
   a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),10000);
-  const status=button.parentElement.querySelector('.status');
+  const status=button.closest('[aria-live]')?.querySelector('.status')||button.parentElement.querySelector('.status');
   if(status)status.textContent='Download requested. Your document is a Markdown file.';
 }
 document.querySelector('#download-survey')?.addEventListener('click',event=>{
@@ -88,30 +88,48 @@ const launchTracks=[
  ['Set the human check-in cadence.','Agree what evidence can be collected, who reviews it, and how roadblocks get help.']],
  evidence:'A first artifact the person can use, a story-spec to iterate, and a date for the next check-in.'}
 ];
-let launchText='';
-document.querySelector('#launch-form')?.addEventListener('submit',event=>{
-  event.preventDefault();
-  const data=new FormData(event.currentTarget);
+const scrollToPanel=panel=>panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+/* Each worksheet is rebuilt from the form as it stands now: when the preview is made, whenever a field changes afterward, and again at the moment of download. A download can never be older than the form. */
+const launchForm=document.querySelector('#launch-form');
+function renderLaunch(){
+  const data=new FormData(launchForm);
   const keys=['listening','governance','leadership','environment'];
   const unresolved=keys.findIndex(key=>data.get(key)!=='yes');
   const track=launchTracks[unresolved===-1?4:unresolved];
   const name=String(data.get('organization')||'Your organization').trim()||'Your organization';
   const labels=['Listening across the organization','Usable guardrails','Department-head support and direction','First-session environment'];
-  launchText=`# Mastersori launch map\n\n## ${name}\n\n${track.title}\n\n## Your stated starting conditions\n\n${keys.map((key,i)=>`- ${labels[i]}: ${data.get(key)==='yes'?'Ready / completed':'Not yet / mixed / unclear'}`).join('\n')}\n\n## Three next actions\n\n${track.actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\n`;
+  const text=`# Mastersori launch map\n\n## ${name}\n\n${track.title}\n\n## Your stated starting conditions\n\n${keys.map((key,i)=>`- ${labels[i]}: ${data.get(key)==='yes'?'Ready / completed':'Not yet / mixed / unclear'}`).join('\n')}\n\n## Three next actions\n\n${track.actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\n`;
   const panel=document.querySelector('#launch-result');
   panel.innerHTML=`<p class="eyebrow">Your launch map</p><p class="small muted">${escapeHTML(name)}</p><h3>${track.title}</h3><ol>${track.actions.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol><p class="small"><strong>Evidence to look for</strong><br>${track.evidence}</p><button class="outline-button" id="download-map" type="button">Download the map ↓</button><p class="status" role="status"></p><p class="small muted">Start here, then revisit the remaining preparation. A rules-based worksheet, not an AI assessment.</p>`;
-  document.querySelector('#download-map').addEventListener('click',event=>download('mastersori-launch-map.md',launchText,event.currentTarget));
-  panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-});
-document.querySelector('#story-form')?.addEventListener('submit',event=>{
-  event.preventDefault();
-  const data=new FormData(event.currentTarget);
+  panel.dataset.rendered='true';
+  document.querySelector('#download-map').addEventListener('click',()=>{
+    const fresh=renderLaunch();
+    download('mastersori-launch-map.md',fresh.text,document.querySelector('#download-map'));
+  });
+  return {text,panel};
+}
+launchForm?.addEventListener('submit',event=>{event.preventDefault();scrollToPanel(renderLaunch().panel);});
+const later=fn=>{let t;return()=>{clearTimeout(t);t=setTimeout(fn,350);};};
+const refreshLaunch=later(()=>{if(document.querySelector('#launch-result')?.dataset.rendered)renderLaunch();});
+launchForm?.addEventListener('input',refreshLaunch);
+launchForm?.addEventListener('change',refreshLaunch);
+const storyForm=document.querySelector('#story-form');
+function renderStory(){
+  const data=new FormData(storyForm);
   const title=String(data.get('title')||'Untitled moonshot').trim()||'Untitled moonshot';
   const sections=[['beginning','The beginning'],['middle','The middle'],['end','The end'],['test','The reader test']];
   const content=sections.map(([key,label])=>`## ${label}\n\n${String(data.get(key)||'').trim()||'[Open question: this part of the story still needs to be written.]'}`).join('\n\n');
-  const markdown=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · First edition\n`;
+  const text=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · First edition\n`;
   const panel=document.querySelector('#story-result');
   panel.innerHTML=`<p class="eyebrow">Your working story-spec</p><h3>${escapeHTML(title)}</h3><div class="worksheet-preview">${sections.map(([key,label])=>`<strong>${label}</strong>\n${escapeHTML(String(data.get(key)||'').trim()||'[Open question: not yet written.]')}`).join('\n\n')}</div><div class="actions"><button class="outline-button" id="download-story" type="button">Download the story ↓</button></div><p class="status" role="status"></p><p class="small muted">Your words, formatted. No feasibility check or AI review has been performed.</p>`;
-  document.querySelector('#download-story').addEventListener('click',event=>download('mastersori-moonshot-story.md',markdown,event.currentTarget));
-  panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
-});
+  panel.dataset.rendered='true';
+  document.querySelector('#download-story').addEventListener('click',()=>{
+    const fresh=renderStory();
+    download('mastersori-moonshot-story.md',fresh.text,document.querySelector('#download-story'));
+  });
+  return {text,panel};
+}
+storyForm?.addEventListener('submit',event=>{event.preventDefault();scrollToPanel(renderStory().panel);});
+const refreshStory=later(()=>{if(document.querySelector('#story-result')?.dataset.rendered)renderStory();});
+storyForm?.addEventListener('input',refreshStory);
+storyForm?.addEventListener('change',refreshStory);

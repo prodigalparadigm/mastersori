@@ -19,7 +19,7 @@ Use an organization-approved survey channel. Explain the purpose, whether respon
 
 5. Where has AI disappointed you, failed, or made more work?
 
-6. Which recurring task takes more time than it should?
+6. Which recurring task would you change? About how long does one instance take now, including checking, and how often do you do it? An estimate or 'not sure' is fine.
 
 7. What concerns would you want addressed before using AI here?
 
