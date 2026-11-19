@@ -26,6 +26,31 @@ function openHash(){
   if(target?.classList.contains('stage'))target.open=true;
 }
 window.addEventListener('hashchange',openHash);openHash();
+const contentsDisclosure=document.querySelector('.contents-disclosure');
+if(contentsDisclosure&&matchMedia('(max-width:640px)').matches){
+  /* On a phone the contents list starts closed. Closing it moves everything below, so a jump is made only after the list has closed. */
+  const land=id=>{
+    const target=document.getElementById(id);
+    if(!target)return;
+    if(target.classList.contains('stage'))target.open=true;
+    requestAnimationFrame(()=>target.scrollIntoView({behavior:'instant',block:'start'}));
+  };
+  contentsDisclosure.open=false;
+  contentsDisclosure.addEventListener('click',event=>{
+    const link=event.target.closest('a[href^="#"]');
+    if(!link)return;
+    event.preventDefault();
+    const id=link.getAttribute('href').slice(1);
+    contentsDisclosure.open=false;
+    history.pushState(null,'','#'+id);
+    land(id);
+  });
+  if(location.hash){
+    const id=location.hash.slice(1);
+    land(id);
+    window.addEventListener('load',()=>land(id),{once:true});
+  }
+}
 const tabs=[...document.querySelectorAll('[data-tab]')];
 function selectTab(tab){
   tabs.forEach(t=>{
