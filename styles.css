@@ -196,9 +196,20 @@ fieldset.needs-script:disabled{opacity:.55}
 .sponsor-block li{margin:5px 0}
 .form-status{margin-top:14px}
 
-/* Argument page: each illustration opens its section, above the heading. The prose runs on clean paper. */
-.marked>.watermark{display:block;width:min(300px,62%);height:auto;margin:0 0 28px -6px;pointer-events:none;user-select:none}
-.marked>.watermark-time{width:min(230px,50%)}
+/* Argument page: each illustration sits behind the passage it describes, as a watermark. */
+.marked{position:relative}
+.marked>*{position:relative;z-index:1}
+.marked>.watermark{position:absolute;z-index:0;pointer-events:none;user-select:none;max-width:none;height:auto;left:50%;transform:translateX(-50%)}
+.marked>.watermark-machine{top:150px;width:175%;transform:translateX(-50%) rotate(22deg);transform-origin:50% 50%}
+.marked>.watermark-time{top:152px;width:92%;left:-9%;transform:none}
+.marked>.watermark-work{top:40px;width:128%}
+/* On tablets and phones the watermark is clipped inside its own section, bleeding only to the page gutter, so the page is never wider than the screen. */
+@media(max-width:1180px){.marked{overflow:hidden;margin-inline:-48px;padding-inline:48px}}
+@media(max-width:900px){.marked{margin-inline:-32px;padding-inline:32px}}
+@media(max-width:640px){.marked{margin-inline:-20px;padding-inline:20px}
+.marked>.watermark-machine{width:200%;top:200px}
+.marked>.watermark-time{width:110%;top:170px;left:-10%}
+.marked>.watermark-work{width:150%;top:70px}}
 /* Home: the whole phase card is the link to its first step. */
 .movement{position:relative}
 .card-link{color:inherit;text-decoration:none}
