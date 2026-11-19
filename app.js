@@ -53,14 +53,21 @@ function download(name,content,button){
   const a=document.createElement('a');
   a.href=url;a.download=name;document.body.append(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),10000);
-  const status=button.closest('[aria-live]')?.querySelector('.status')||button.parentElement.querySelector('.status');
+  const status=button.parentElement.querySelector('.status')||button.closest('[aria-live]')?.querySelector('.status');
   if(status)status.textContent='Download requested. Your document is a Markdown file.';
 }
-document.querySelector('#download-survey')?.addEventListener('click',event=>{
+const surveyText=()=>JSON.parse(document.querySelector('#survey-document').textContent);
+document.querySelectorAll('.download-survey').forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();
-  const content=JSON.parse(document.querySelector('#survey-document').textContent);
-  download('mastersori-day-one-survey.md',content,event.currentTarget);
-});
+  download('mastersori-day-one-survey.md',surveyText(),event.currentTarget);
+}));
+document.querySelectorAll('.copy-survey').forEach(button=>button.addEventListener('click',async()=>{
+  const status=button.parentElement.querySelector('.status');
+  try{await navigator.clipboard.writeText(surveyText());if(status)status.textContent='Copied.';}
+  catch(error){if(status)status.textContent='Copy did not work here. Use the download instead.';}
+}));
+const sourceURL=(document.querySelector('link[rel="canonical"]')?.href)||location.href.split(/[?#]/)[0];
+const field=id=>String(document.getElementById(id)?.value||'');
 const launchTracks=[
  {title:'Start by listening.',actions:[
  ['Send the day-one survey.','Use ten questions or fewer. Close with the project each person wishes they could attempt.'],
@@ -91,37 +98,56 @@ const launchTracks=[
 const scrollToPanel=panel=>panel.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
 /* Each worksheet is rebuilt from the form as it stands now: when the preview is made, whenever a field changes afterward, and again at the moment of download. A download can never be older than the form. */
 const launchForm=document.querySelector('#launch-form');
+const conditions=[
+ {id:'listening',label:'Listening across the organization',owner:'the sponsor',question:'Has anyone surveyed the staff or sat down with the department heads about AI yet, and where are the results?'},
+ {id:'governance',label:'Usable guardrails',owner:'whoever owns data and compliance',question:'What may go into the approved AI platform, what must stay out, and is there an acceptable-use policy people can explain?'},
+ {id:'leadership',label:'Department-head support and direction',owner:'the sponsor',question:'Which department heads are behind this, which are not, and is there a shared timeline?'},
+ {id:'environment',label:'First-session environment',owner:'IT',question:'Are the approved tools installed, are the connections tested, and does everyone have enough usage capacity for a first session?'}
+];
+const stateLabel={yes:'Ready / completed',no:'Not yet / mixed / unclear',unknown:'Not known yet - a question to take to the owner'};
 function renderLaunch(){
-  const data=new FormData(launchForm);
-  const keys=['listening','governance','leadership','environment'];
-  const unresolved=keys.findIndex(key=>data.get(key)!=='yes');
-  const track=launchTracks[unresolved===-1?4:unresolved];
-  const name=String(data.get('organization')||'Your organization').trim()||'Your organization';
-  const labels=['Listening across the organization','Usable guardrails','Department-head support and direction','First-session environment'];
-  const text=`# Mastersori launch map\n\n## ${name}\n\n${track.title}\n\n## Your stated starting conditions\n\n${keys.map((key,i)=>`- ${labels[i]}: ${data.get(key)==='yes'?'Ready / completed':'Not yet / mixed / unclear'}`).join('\n')}\n\n## Three next actions\n\n${track.actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\n`;
+  const formStatus=launchForm.querySelector('.form-status');
+  const answers=conditions.map(c=>({...c,state:field(c.id)}));
+  const unanswered=answers.filter(a=>!a.state);
+  if(unanswered.length){
+    if(formStatus)formStatus.textContent=`Choose an answer for: ${unanswered.map(a=>a.label.toLowerCase()).join('; ')}. “I don’t know” is an answer.`;
+    return null;
+  }
+  if(formStatus)formStatus.textContent='';
+  const unknowns=answers.filter(a=>a.state==='unknown');
+  const firstNo=answers.findIndex(a=>a.state==='no');
+  const track=firstNo!==-1?launchTracks[firstNo]:(unknowns.length?null:launchTracks[4]);
+  const title=track?track.title:'Ask before you start.';
+  const name=field('organization').trim()||'Your organization';
+  const asks=unknowns.map(a=>[`Ask ${a.owner}.`,a.question]);
+  const askText=asks.length?`## Questions to ask first\n\nYou answered “I don’t know” to ${asks.length===1?'one condition':'some conditions'}. That is not recorded as “not yet”. It is a question for the person who owns the answer.\n\n${unknowns.map(a=>`- ${a.label}: ask ${a.owner}. ${a.question}`).join('\n')}\n\n`:'';
+  const actionText=track?`## Three next actions\n\n${track.actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n`:'';
+  const text=`# Mastersori launch map\n\n## ${name}\n\n${title}\n\n## Your stated starting conditions\n\n${answers.map(a=>`- ${a.label}: ${stateLabel[a.state]}`).join('\n')}\n\n${askText}${actionText}## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\nSource: ${sourceURL}\n`;
   const panel=document.querySelector('#launch-result');
-  panel.innerHTML=`<p class="eyebrow">Your launch map</p><p class="small muted">${escapeHTML(name)}</p><h3>${track.title}</h3><ol>${track.actions.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol><p class="small"><strong>Evidence to look for</strong><br>${track.evidence}</p><button class="outline-button" id="download-map" type="button">Download the map ↓</button><p class="status" role="status"></p><p class="small muted">Start here, then revisit the remaining preparation. A rules-based worksheet, not an AI assessment.</p>`;
+  const askHTML=asks.length?`<p class="small"><strong>Questions to ask first</strong><br>“I don’t know” is not recorded as “not yet”. It goes to the person who owns the answer.</p><ol>${asks.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol>`:'';
+  const actionHTML=track?`${asks.length?'<p class="small"><strong>Meanwhile, three next actions</strong></p>':''}<ol>${track.actions.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol><p class="small"><strong>Evidence to look for</strong><br>${track.evidence}</p>`:'';
+  panel.innerHTML=`<p class="eyebrow">Your launch map</p><p class="small muted">${escapeHTML(name)}</p><h3>${title}</h3>${askHTML}${actionHTML}<button class="outline-button" id="download-map" type="button">Download the map ↓</button><p class="status" role="status"></p><p class="small muted">Start here, then revisit the remaining preparation. A rules-based worksheet, not an AI assessment.</p>`;
   panel.dataset.rendered='true';
   document.querySelector('#download-map').addEventListener('click',()=>{
     const fresh=renderLaunch();
-    download('mastersori-launch-map.md',fresh.text,document.querySelector('#download-map'));
+    if(fresh)download('mastersori-launch-map.md',fresh.text,document.querySelector('#download-map'));
   });
   return {text,panel};
 }
-launchForm?.addEventListener('submit',event=>{event.preventDefault();scrollToPanel(renderLaunch().panel);});
+launchForm?.addEventListener('submit',event=>{event.preventDefault();const made=renderLaunch();if(made)scrollToPanel(made.panel);});
 const later=fn=>{let t;return()=>{clearTimeout(t);t=setTimeout(fn,350);};};
 const refreshLaunch=later(()=>{if(document.querySelector('#launch-result')?.dataset.rendered)renderLaunch();});
 launchForm?.addEventListener('input',refreshLaunch);
 launchForm?.addEventListener('change',refreshLaunch);
 const storyForm=document.querySelector('#story-form');
 function renderStory(){
-  const data=new FormData(storyForm);
-  const title=String(data.get('title')||'Untitled moonshot').trim()||'Untitled moonshot';
+  const title=field('story-title').trim()||'Untitled moonshot';
   const sections=[['beginning','The beginning'],['middle','The middle'],['end','The end'],['test','The reader test']];
-  const content=sections.map(([key,label])=>`## ${label}\n\n${String(data.get(key)||'').trim()||'[Open question: this part of the story still needs to be written.]'}`).join('\n\n');
-  const text=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · First edition\n`;
+  const part=key=>field('story-'+key).trim();
+  const content=sections.map(([key,label])=>`## ${label}\n\n${part(key)||'[Open question: this part of the story still needs to be written.]'}`).join('\n\n');
+  const text=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · First edition\nSource: ${sourceURL}\n`;
   const panel=document.querySelector('#story-result');
-  panel.innerHTML=`<p class="eyebrow">Your working story-spec</p><h3>${escapeHTML(title)}</h3><div class="worksheet-preview">${sections.map(([key,label])=>`<strong>${label}</strong>\n${escapeHTML(String(data.get(key)||'').trim()||'[Open question: not yet written.]')}`).join('\n\n')}</div><div class="actions"><button class="outline-button" id="download-story" type="button">Download the story ↓</button></div><p class="status" role="status"></p><p class="small muted">Your words, formatted. No feasibility check or AI review has been performed.</p>`;
+  panel.innerHTML=`<p class="eyebrow">Your working story-spec</p><h3>${escapeHTML(title)}</h3><div class="worksheet-preview">${sections.map(([key,label])=>`<strong>${label}</strong>\n${escapeHTML(part(key)||'[Open question: not yet written.]')}`).join('\n\n')}</div><div class="actions"><button class="outline-button" id="download-story" type="button">Download the story ↓</button></div><p class="status" role="status"></p><p class="small muted">Your words, formatted. No feasibility check or AI review has been performed.</p>`;
   panel.dataset.rendered='true';
   document.querySelector('#download-story').addEventListener('click',()=>{
     const fresh=renderStory();
@@ -133,3 +159,6 @@ storyForm?.addEventListener('submit',event=>{event.preventDefault();scrollToPane
 const refreshStory=later(()=>{if(document.querySelector('#story-result')?.dataset.rendered)renderStory();});
 storyForm?.addEventListener('input',refreshStory);
 storyForm?.addEventListener('change',refreshStory);
+/* Last line of the file on purpose: the worksheets switch on only once every handler above is attached. */
+document.querySelectorAll('fieldset.needs-script').forEach(set=>{set.disabled=false;});
+document.documentElement.classList.add('js-ready');

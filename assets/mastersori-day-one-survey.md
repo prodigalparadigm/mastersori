@@ -3,6 +3,28 @@
 A proposed working template by Kathleen Bartin, Prodigal Paradigm LLC.
 First edition · November 2026
 
+## The sponsor's answer
+
+Before sending this survey, the sponsor completes and includes:
+
+1. What are we measuring, and why?
+
+   ____________________________________________
+
+2. Who will see named responses?
+
+   ____________________________________________
+
+3. Can these figures inform staffing decisions? (The method's position: they should not. Say yours.)
+
+   ____________________________________________
+
+4. When will identifiable responses be deleted?
+
+   ____________________________________________
+
+Estimates can be corrected by the person who gave them.
+
 ## Before you send it
 
 Use an organization-approved survey channel. Explain the purpose, whether responses are identifiable, who may see them, and how long they will be retained. Do not collect confidential examples or employee-sensitive information unnecessarily.
@@ -36,3 +58,5 @@ The first nine questions take the temperature. The tenth plants a seed. Return t
 ## Status
 
 This is a starter template, not a validated assessment or the final wording of a previously administered survey.
+
+Source: https://prodigalparadigm.github.io/mastersori/workbench.html
