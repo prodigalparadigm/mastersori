@@ -101,6 +101,7 @@ html:not(.js) .menu-button{display:none}
 .stage-content .quote{font-size:23px}
 .output{font-size:12px;color:var(--green);border-left:1px solid var(--rule);padding-left:16px;margin-top:24px}
 .stage-sub{font-weight:500;color:var(--ink)}.group-label{margin:46px 0 14px}
+.section-lede{font-size:19px;line-height:1.5;color:var(--muted);margin-top:-8px}
 .passage{margin:34px 0 0;padding:4px 0 4px 26px;border-left:1px solid var(--gold)}
 .passage h3{font-size:23px;margin-bottom:16px}
 .passage p:last-child{margin-bottom:0}
