@@ -61,4 +61,4 @@ The first nine questions take the temperature. The tenth plants a seed. Return t
 
 This is a starter template, not a validated assessment or the final wording of a previously administered survey.
 
-Source: https://prodigalparadigm.github.io/mastersori/workbench.html
+Source: https://mastersori.com/workbench.html

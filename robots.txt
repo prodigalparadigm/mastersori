@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://prodigalparadigm.github.io/mastersori/sitemap.xml
+Sitemap: https://mastersori.com/sitemap.xml
