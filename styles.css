@@ -125,7 +125,8 @@ html:not(.js) .menu-button{display:none}
 .never-block h2,.never-block li,.never-block p{color:var(--on-brick)}
 .article-body .never-block h2{margin-top:0}
 .never-block p:last-child{margin-bottom:0}.never-list li::marker,.stage-content ol li::marker{color:var(--gold)}
-.never-block .never-list li::marker{color:#f0c9a6}.contents-label{font-size:11px;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);margin:20px 0 6px}.editor-note ul{padding-left:20px}.editor-note li{margin:9px 0}.running-line{margin:34px 0 0;max-width:70ch}.plain-button{border:0;background:none;color:var(--green);text-decoration:underline;text-underline-offset:5px;font-size:12px;padding:10px 0;min-height:44px}
+.never-block .never-list li::marker{color:#f0c9a6}
+.running-block .stage-content ol li::marker{color:#e9cc8f}.contents-label{font-size:11px;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);margin:20px 0 6px}.editor-note ul{padding-left:20px}.editor-note li{margin:9px 0}.running-line{margin:34px 0 0;max-width:70ch}.plain-button{border:0;background:none;color:var(--green);text-decoration:underline;text-underline-offset:5px;font-size:12px;padding:10px 0;min-height:44px}
 .stage-tools{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .stage-tools p{margin:0}
 .editor-note{padding:26px 30px;border:1px solid var(--line);margin-top:42px;font-size:13px}
@@ -234,3 +235,9 @@ fieldset.needs-script:disabled{opacity:.55}
 .contents-disclosure[open]>summary::after{content:"-"}
 .contents-disclosure[open]>summary{margin-bottom:10px}
 }
+
+/* Workbench: a result that no longer matches the form is marked, and its download is withheld. */
+.result-panel.is-stale>*:not(.stale-note){opacity:.45}
+.result-panel.is-stale #download-map{display:none}
+.stale-note{font-size:14px;font-weight:500;color:var(--ink);border-left:2px solid var(--rule);padding-left:12px;margin:0 0 18px}
+.result-panel h3:focus{outline:none}

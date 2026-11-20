@@ -61,7 +61,7 @@ function selectTab(tab){
   });
 }
 tabs.forEach((tab,i)=>{
-  tab.addEventListener('click',()=>selectTab(tab));
+  tab.addEventListener('click',()=>{selectTab(tab);if(location.hash.slice(1)!==tab.dataset.tab)history.pushState(null,'','#'+tab.dataset.tab);});
   tab.addEventListener('keydown',e=>{
     let index;
     if(e.key==='ArrowRight')index=(i+1)%tabs.length;
@@ -71,6 +71,14 @@ tabs.forEach((tab,i)=>{
     if(index!==undefined){e.preventDefault();selectTab(tabs[index]);tabs[index].focus();}
   });
 });
+/* #map, #survey and #story (and the older #panel-... form) open their tab on arrival and on Back and Forward. */
+function tabFromAddress(){
+  const key=location.hash.slice(1).replace(/^panel-/,'');
+  const tab=tabs.find(t=>t.dataset.tab===key);
+  if(tab)selectTab(tab);
+  else if(!location.hash&&tabs.length)selectTab(tabs[0]);
+}
+if(tabs.length){window.addEventListener('hashchange',tabFromAddress);window.addEventListener('popstate',tabFromAddress);tabFromAddress();}
 const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function download(name,content,button){
   const blob=new Blob([content],{type:'text/markdown;charset=utf-8'});
@@ -130,57 +138,88 @@ const conditions=[
  {id:'environment',label:'First-session environment',owner:'IT',question:'Are the approved tools installed, are the connections tested, and does everyone have enough usage capacity for a first session?'}
 ];
 const stateLabel={yes:'Ready / completed',no:'Not yet / mixed / unclear',unknown:'Not known yet - a question to take to the owner'};
-function renderLaunch(){
-  const formStatus=launchForm.querySelector('.form-status');
+/* While the data question is open, no suggested action may point at live systems. */
+const practiceAction=['Rehearse with a practice inbox.','Do not connect live mail, calendar or other work data until the person responsible for that data approves this particular use.'];
+const touchesLiveData=([heading])=>heading==='Test the real connections.'||heading==='Run the first hands-on build.';
+/* Repaint a result panel without losing the person's place: if they were on its Download button, they still are. */
+function paint(panel,html,buttonId){
+  const hadFocus=document.activeElement&&document.activeElement.id===buttonId;
+  panel.classList.remove('is-stale');
+  panel.innerHTML=html;
+  panel.dataset.rendered='true';
+  if(hadFocus)document.getElementById(buttonId)?.focus();
+}
+const focusHeading=panel=>{const heading=panel.querySelector('h3');if(heading){heading.tabIndex=-1;heading.focus({preventScroll:true});}};
+function buildLaunch(){
   const answers=conditions.map(c=>({...c,state:field(c.id)}));
   const unanswered=answers.filter(a=>!a.state);
-  if(unanswered.length){
-    if(formStatus)formStatus.textContent=`Choose an answer for: ${unanswered.map(a=>a.label.toLowerCase()).join('; ')}. “I don’t know” is an answer.`;
+  if(unanswered.length)return {unanswered};
+  const unknowns=answers.filter(a=>a.state==='unknown');
+  const dataOpen=answers[1].state==='unknown';
+  const firstNo=answers.findIndex(a=>a.state==='no');
+  const track=firstNo!==-1?launchTracks[firstNo]:(unknowns.length?null:launchTracks[4]);
+  const actions=track?track.actions.map(action=>dataOpen&&touchesLiveData(action)?practiceAction:action):[];
+  const title=track?track.title:'Ask before you start.';
+  const name=field('organization').trim()||'Your organization';
+  const lead=unknowns.length?`Unknowns become questions for the owner. The first known gap suggests up to three actions.${dataOpen?' While data approval is open, practice on sample material only.':''}`:'';
+  const askText=unknowns.length?`## Questions to ask first\n\n${lead}\n\n${unknowns.map(a=>`- ${a.label}: ask ${a.owner}. ${a.question}`).join('\n')}\n\n`:'';
+  const actionText=track?`## ${unknowns.length?'Meanwhile, three next actions':'Three next actions'}\n\n${actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n`:'';
+  const text=`# Mastersori launch map\n\n## ${name}\n\n${title}\n\n## Your stated starting conditions\n\n${answers.map(a=>`- ${a.label}: ${stateLabel[a.state]}`).join('\n')}\n\n${askText}${actionText}## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\nSource: ${sourceURL}\n`;
+  const askHTML=unknowns.length?`<p class="small"><strong>Questions to ask first</strong><br>${lead}</p><ol>${unknowns.map(a=>`<li><strong>Ask ${a.owner}.</strong><br>${a.question}</li>`).join('')}</ol>`:'';
+  const actionHTML=track?`${unknowns.length?'<p class="small"><strong>Meanwhile, three next actions</strong></p>':''}<ol>${actions.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol><p class="small"><strong>Evidence to look for</strong><br>${track.evidence}</p>`:'';
+  const html=`<p class="eyebrow">Your launch map</p><p class="small muted">${escapeHTML(name)}</p><h3>${title}</h3>${askHTML}${actionHTML}<button class="outline-button" id="download-map" type="button">Download the map ↓</button><p class="status" role="status"></p><p class="small muted">Start here, then revisit the remaining preparation. A rules-based worksheet, not an AI assessment.</p>`;
+  return {text,html};
+}
+let launchShown='';
+function renderLaunch(){
+  const formStatus=launchForm.querySelector('.form-status');
+  const panel=document.querySelector('#launch-result');
+  const built=buildLaunch();
+  if(built.unanswered){
+    if(formStatus)formStatus.textContent=`Choose an answer for: ${built.unanswered.map(a=>a.label.toLowerCase()).join('; ')}. “I don’t know” is an answer.`;
+    /* A map already on screen no longer matches the form: say so and withhold its download. */
+    if(panel.dataset.rendered&&!panel.classList.contains('is-stale')){
+      panel.classList.add('is-stale');
+      panel.insertAdjacentHTML('afterbegin','<p class="stale-note">Previous map. Complete the missing answer to update.</p>');
+    }
     return null;
   }
   if(formStatus)formStatus.textContent='';
-  const unknowns=answers.filter(a=>a.state==='unknown');
-  const firstNo=answers.findIndex(a=>a.state==='no');
-  const track=firstNo!==-1?launchTracks[firstNo]:(unknowns.length?null:launchTracks[4]);
-  const title=track?track.title:'Ask before you start.';
-  const name=field('organization').trim()||'Your organization';
-  const asks=unknowns.map(a=>[`Ask ${a.owner}.`,a.question]);
-  const askText=asks.length?`## Questions to ask first\n\nYou answered “I don’t know” to ${asks.length===1?'one condition':'some conditions'}. That is not recorded as “not yet”. It is a question for the person who owns the answer.\n\n${unknowns.map(a=>`- ${a.label}: ask ${a.owner}. ${a.question}`).join('\n')}\n\n`:'';
-  const actionText=track?`## Three next actions\n\n${track.actions.map(([heading,body],i)=>`${i+1}. ${heading} ${body}`).join('\n\n')}\n\n## Evidence to look for\n\n${track.evidence}\n\n`:'';
-  const text=`# Mastersori launch map\n\n## ${name}\n\n${title}\n\n## Your stated starting conditions\n\n${answers.map(a=>`- ${a.label}: ${stateLabel[a.state]}`).join('\n')}\n\n${askText}${actionText}## Limits\n\nThis is a rules-based starter map assembled from your choices, not an AI-generated assessment or an adoption score. Start with the earliest unresolved condition, then revisit the remaining preparation. It does not replace the full method.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · Mastersori first edition\nSource: ${sourceURL}\n`;
-  const panel=document.querySelector('#launch-result');
-  const askHTML=asks.length?`<p class="small"><strong>Questions to ask first</strong><br>“I don’t know” is not recorded as “not yet”. It goes to the person who owns the answer.</p><ol>${asks.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol>`:'';
-  const actionHTML=track?`${asks.length?'<p class="small"><strong>Meanwhile, three next actions</strong></p>':''}<ol>${track.actions.map(([heading,body])=>`<li><strong>${heading}</strong><br>${body}</li>`).join('')}</ol><p class="small"><strong>Evidence to look for</strong><br>${track.evidence}</p>`:'';
-  panel.innerHTML=`<p class="eyebrow">Your launch map</p><p class="small muted">${escapeHTML(name)}</p><h3>${title}</h3>${askHTML}${actionHTML}<button class="outline-button" id="download-map" type="button">Download the map ↓</button><p class="status" role="status"></p><p class="small muted">Start here, then revisit the remaining preparation. A rules-based worksheet, not an AI assessment.</p>`;
-  panel.dataset.rendered='true';
-  document.querySelector('#download-map').addEventListener('click',()=>{
-    const fresh=renderLaunch();
-    if(fresh)download('mastersori-launch-map.md',fresh.text,document.querySelector('#download-map'));
-  });
-  return {text,panel};
+  if(built.text!==launchShown||panel.classList.contains('is-stale')){
+    paint(panel,built.html,'download-map');
+    launchShown=built.text;
+    document.querySelector('#download-map').addEventListener('click',event=>{
+      const fresh=renderLaunch();
+      if(fresh)download('mastersori-launch-map.md',fresh.text,document.querySelector('#download-map'));
+    });
+  }
+  return {text:built.text,panel};
 }
-launchForm?.addEventListener('submit',event=>{event.preventDefault();const made=renderLaunch();if(made)scrollToPanel(made.panel);});
+launchForm?.addEventListener('submit',event=>{event.preventDefault();const made=renderLaunch();if(made){scrollToPanel(made.panel);focusHeading(made.panel);}});
 const later=fn=>{let t;return()=>{clearTimeout(t);t=setTimeout(fn,350);};};
 const refreshLaunch=later(()=>{if(document.querySelector('#launch-result')?.dataset.rendered)renderLaunch();});
 launchForm?.addEventListener('input',refreshLaunch);
 launchForm?.addEventListener('change',refreshLaunch);
 const storyForm=document.querySelector('#story-form');
+let storyShown='';
 function renderStory(){
   const title=field('story-title').trim()||'Untitled moonshot';
   const sections=[['beginning','The beginning'],['middle','The middle'],['end','The end'],['test','The reader test']];
   const part=key=>field('story-'+key).trim();
   const content=sections.map(([key,label])=>`## ${label}\n\n${part(key)||'[Open question: this part of the story still needs to be written.]'}`).join('\n\n');
-  const text=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nBy Kathleen Bartin · Prodigal Paradigm LLC · First edition\nSource: ${sourceURL}\n`;
+  const text=`# ${title}\n\nMastersori moonshot story-spec · Working draft\n\n${content}\n\n## Before you build\n\nAsk a person who does not know the story to read it. Can they reach the same outcome? Add missing steps, human review points, data boundaries, and exceptions. Test on a small, safe example. This worksheet formats your words; it does not validate the plan or call an AI model.\n\nProject story: written by the person using this worksheet. Worksheet design: Kathleen Bartin, Prodigal Paradigm LLC · First edition.\nSource: ${sourceURL}\n`;
   const panel=document.querySelector('#story-result');
-  panel.innerHTML=`<p class="eyebrow">Your working story-spec</p><h3>${escapeHTML(title)}</h3><div class="worksheet-preview">${sections.map(([key,label])=>`<strong>${label}</strong>\n${escapeHTML(part(key)||'[Open question: not yet written.]')}`).join('\n\n')}</div><div class="actions"><button class="outline-button" id="download-story" type="button">Download the story ↓</button></div><p class="status" role="status"></p><p class="small muted">Your words, formatted. No feasibility check or AI review has been performed.</p>`;
-  panel.dataset.rendered='true';
-  document.querySelector('#download-story').addEventListener('click',()=>{
-    const fresh=renderStory();
-    download('mastersori-moonshot-story.md',fresh.text,document.querySelector('#download-story'));
-  });
+  if(text!==storyShown){
+    paint(panel,`<p class="eyebrow">Your working story-spec</p><h3>${escapeHTML(title)}</h3><div class="worksheet-preview">${sections.map(([key,label])=>`<strong>${label}</strong>\n${escapeHTML(part(key)||'[Open question: not yet written.]')}`).join('\n\n')}</div><div class="actions"><button class="outline-button" id="download-story" type="button">Download the story ↓</button></div><p class="status" role="status"></p><p class="small muted">Your words, formatted. No feasibility check or AI review has been performed.</p>`,'download-story');
+    storyShown=text;
+    document.querySelector('#download-story').addEventListener('click',()=>{
+      const fresh=renderStory();
+      download('mastersori-moonshot-story.md',fresh.text,document.querySelector('#download-story'));
+    });
+  }
   return {text,panel};
 }
-storyForm?.addEventListener('submit',event=>{event.preventDefault();scrollToPanel(renderStory().panel);});
+storyForm?.addEventListener('submit',event=>{event.preventDefault();const made=renderStory();scrollToPanel(made.panel);focusHeading(made.panel);});
 const refreshStory=later(()=>{if(document.querySelector('#story-result')?.dataset.rendered)renderStory();});
 storyForm?.addEventListener('input',refreshStory);
 storyForm?.addEventListener('change',refreshStory);
