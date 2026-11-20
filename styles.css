@@ -105,6 +105,7 @@ html:not(.js) .menu-button{display:none}
 .passage{margin:34px 0 0;padding:4px 0 4px 26px;border-left:1px solid var(--gold)}
 .passage h3{font-size:23px;margin-bottom:16px}
 .passage p:last-child{margin-bottom:0}
+.passage.emphasis{margin:32px 0 36px;border-left-width:2px}
 .passage+details.stage{margin-top:38px}
 .passage ol li{padding-left:4px;margin:6px 0}
 .passage ol li::marker{color:var(--gold)}.stage-content ol,.article-body ol{padding-left:22px}.stage-content ol li{padding-left:4px}.never-list li{margin:14px 0;padding-left:6px}
