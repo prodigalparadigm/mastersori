@@ -25,6 +25,8 @@ Before sending this survey, the sponsor completes and includes:
 
 Estimates can be corrected by the person who gave them.
 
+If the sponsor cannot rule out using identifiable time estimates for staffing decisions, I do not collect named hours for this exercise. A person may keep their own estimate private or skip the exercise.
+
 ## Before you send it
 
 Use an organization-approved survey channel. Explain the purpose, whether responses are identifiable, who may see them, and how long they will be retained. Do not collect confidential examples or employee-sensitive information unnecessarily.
